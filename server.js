@@ -78,7 +78,7 @@ app.post("/getTruckerInfo", function(req,res){
   var t_id = req.body.trucker_id;
   queries.getTruckerInfo(t_id).then(function(data){
     res.send(data);
-  }).catch(function(rej){
+  }).catch(function(err){
     console.log(err);
     res.send(err);
   });

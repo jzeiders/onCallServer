@@ -201,7 +201,7 @@ var timeRandom = function() {
 }
 var fillJob = function(t_id, j_id) {
 	return new Promise(function(res, rej) {
-		var query = "UPDATE jobs SET trucker_id = "+t_id  + "WHERE id= " +j_id+ ";"
+		var query = "UPDATE jobs SET trucker_id = " + t_id + "WHERE id= " + j_id + ";"
 		client.query(query, function(err, data) {
 			if (err) rej(err);
 			res();
@@ -210,7 +210,7 @@ var fillJob = function(t_id, j_id) {
 }
 var getJob = function(j_id) {
 	return new Promise(function(res, rej) {
-		var query = "SELECT * FROM jobs WHERE id= "+j_id+";"
+		var query = "SELECT * FROM jobs WHERE id= " + j_id + ";"
 		client.query(query, function(err, data) {
 			if (err || data.rows.length < 1) rej(err)
 			res(data.rows[0]);
@@ -219,24 +219,24 @@ var getJob = function(j_id) {
 }
 var getTruckerInfo = function(t_id) {
 	return new Promise(function(res, rej) {
-		var query = "SELECT * FROM jobs WHERE trucker_id="+ t_id+";"
-    client.query(query, function(err, data) {
-      if (err) rej(err)
-      var jobs = []
-      if(data)
-         jobs = data.rows;
-      var query="SELECT * FROM truckers WHERE id= + "+t_id+";";
-      console.log("hi");
-      client.query(query, function(err,data){
-        if(err) rej(err)
-        var value = {};
-        if(data)
-          value = data.rows[0];
-        console.log(jobs +"HI");
-        value.jobs = jobs;
-        res(value);
-      });
-    });
+		var query = "SELECT * FROM jobs WHERE trucker_id=" + t_id + ";"
+		client.query(query, function(err, data) {
+			if (err) rej(err)
+			var jobs = []
+			if (data)
+				jobs = data.rows;
+			var query = "SELECT * FROM truckers WHERE id= + " + t_id + ";";
+			console.log("hi");
+			client.query(query, function(err, data) {
+				if (err) rej(err)
+				if (!data)
+					rej("Invalid ID")
+        var value = {}
+				console.log(jobs + "HI");
+				value.jobs = jobs;
+				res(value);
+			});
+		});
 	});
 }
 var client = new pg.Client(pgConfig);
