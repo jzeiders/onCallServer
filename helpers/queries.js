@@ -145,7 +145,7 @@ var jobGen = function(vessel) {
     client.query(query, function(err, data) {
 			if (err) rej(err);
 			console.log(data);
-			for (var i = 0; i < data.rows.length; i++) {
+			for (var i = 0; i < Math.min(20,data.rows.length); i++) {
 				var item = data.rows[i];
 				var query = jobQueryConstructor(item.est_arrival, item.container_size, item.container_num, item.unload_port, item.arriving_term, item.inland_point);
 				client.query(query, handler);
