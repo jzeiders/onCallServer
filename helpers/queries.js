@@ -131,9 +131,9 @@ var getLocalities = function(vessel) {
 			});
 			for (var i = 0; i < places.length; i++) {
 				if (places[i] == "IPI")
-					counts.ipi += 1;
+					counts.IPI += 1;
 				if (places[i] == "Local")
-					counts.local += 1;
+					counts.Local += 1;
 			}
 			res(counts);
 		});
