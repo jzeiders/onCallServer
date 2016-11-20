@@ -3,7 +3,7 @@ var Promise = require('promise')
 var pgConfig = {
 	user: 'awsadmin', //env var: PGUSER
 	database: 'scdt', //env var: PGDATABASE
-	password: 'blastER$1880', //env var: PGPASSWORD
+	password: process.env.AWSPASS, //env var: PGPASSWORD
 	host: 'scdthack.cxjdjf9lpax5.us-west-2.rds.amazonaws.com', // Server hosting the postgres database
 	port: 5432, //env var: PGPORT
 	max: 10, // max number of clients in the pool
@@ -88,7 +88,6 @@ var vesselQuery = function(vessel) {
         return v.container_size
       })
       for(var i = 0; i < sizes.length;i++){
-        console.log(sizes[i])
         if(sizes[i] == 20)
           counts[0]+=1;
         if(sizes[i] == '40')
