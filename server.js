@@ -18,8 +18,10 @@ app.post("/vessel", function(req,res){
     res.send(data);
   });
 });
-app.post("/jobs", function(req,res){
-
+app.get("/jobs", function(req,res){
+  queries.getJobs().then(function(data){
+    res.send(data);
+  });
 });
 
 app.listen(process.env.PORT || 3000, function() {

@@ -100,6 +100,15 @@ var vesselQuery = function(vessel) {
 		});
 	});
 };
+var getJobs = function(){
+  return new Promise(function(res,rej){
+    var query = 'SELECT * FROM jobs WHERE is_finished IS NULL OR is_finished=FALSE';
+    client.query(query,function(err,data){
+      if(err) rej(err);
+      res(data.rows)
+    })
+  });
+};
 var client = new pg.Client(pgConfig);
 var queries = {
 	connect: connect, // Attempts to connect to DB;
@@ -107,7 +116,8 @@ var queries = {
 	chassisGen: chassisGen,
 	getChassisCount: getChassisCount,
 	assignChassis: assignChassis,
-	vesselQuery: vesselQuery
+	vesselQuery: vesselQuery,
+  getJobs: getJobs
 };
 
 
