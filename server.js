@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 	extended: true
 }));
 
-app.get("/", function() {
+app.get("/", function(req,res) {
 	res.send("BLACK FIN APPLICATION SUITE")
 });
 app.post("/vessel", function(req, res) {

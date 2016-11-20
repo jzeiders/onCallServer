@@ -231,7 +231,7 @@ var getTruckerInfo = function(t_id) {
 				if (err) rej(err)
 				if (!data)
 					rej("Invalid ID")
-        var value = {}
+        var value = data.rows[0];
 				console.log(jobs + "HI");
 				value.jobs = jobs;
 				res(value);
