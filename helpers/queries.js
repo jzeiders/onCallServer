@@ -139,16 +139,19 @@ var getLocalities = function(vessel) {
 		});
 	});
 };
+
 var jobGen = function(vessel) {
 	return new Promise(function(res, rej) {
-    var query = "SELECT * FROM arrival WHERE mode_of_exit='Truck' AND vessel_name=$$" + vessel + '$$'
+    var query = "SELECT * FROM arrival WHERE mode_of_exit='Truck' AND vessel_name=$$" + vessel + '$$';
     client.query(query, function(err, data) {
 			if (err) rej(err);
 			console.log(data);
 			for (var i = 0; i < Math.min(20,data.rows.length); i++) {
 				var item = data.rows[i];
 				var query = jobQueryConstructor(item.est_arrival, item.container_size, item.container_num, item.unload_port, item.arriving_term, item.inland_point);
-				client.query(query, handler);
+				client.query(query, function(err, data){
+          if(err) rej(err);
+        });
 			}
       res();
 			console.log(data.rows[0]);

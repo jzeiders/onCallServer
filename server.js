@@ -45,7 +45,8 @@ app.post("/jobGen", function(req, res) {
 	queries.jobGen(vessel).then(function(data) {
 		res.send("Success");
 	}).catch(function(err) {
-		res.send(err);
+    res.status(101);
+    res.send('Faile');
 	});
 });
 
