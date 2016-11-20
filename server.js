@@ -18,8 +18,11 @@ app.post("/vessel", function(req,res){
     res.send(data);
   });
 });
+app.post("/jobs", function(req,res){
 
-app.listen(3000, function() {
+});
+
+app.listen(process.env.PORT || 3000, function() {
 	console.log("Started Server");
 	queries.connect().then(function(data){
     console.log("Connected");
