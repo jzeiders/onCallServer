@@ -14,7 +14,7 @@ var connect = function() {
 	return new Promise(function(res, rej) {
 		client.connect(function(err) {
 			if (err) rej(err);
-			return res("Connected")
+			return res("Connected");
 		});
 	});
 };
@@ -77,36 +77,79 @@ var assignChassis = function() {
 };
 var vesselQuery = function(vessel) {
 	return new Promise(function(res, rej) {
-    var counts = [0,0,0]
-    var query = 'SELECT container_size FROM arrival WHERE vessel_name=$$' + vessel + '$$';
-    console.log(query);
+		var counts = [0, 0, 0]
+		var query = 'SELECT container_size FROM arrival WHERE vessel_name=$$' + vessel + '$$';
+		console.log(query);
 		client.query(query, function(err, data) {
 			if (err) rej(err)
-      console.log(vessel);
-      console.log(data);
-      var sizes = data.rows.map(function(v){
-        return v.container_size
-      })
-      for(var i = 0; i < sizes.length;i++){
-        if(sizes[i] == 20)
-          counts[0]+=1;
-        if(sizes[i] == '40')
-          counts[1]+=1;
-        if(sizes[i] == '45')
-          counts[2]+=1;
-      }
-      res(counts);
+			console.log(vessel);
+			console.log(data);
+			var sizes = data.rows.map(function(v) {
+				return v.container_size
+			})
+			for (var i = 0; i < sizes.length; i++) {
+				if (sizes[i] == 20)
+					counts[0] += 1;
+				if (sizes[i] == '40')
+					counts[1] += 1;
+				if (sizes[i] == '45')
+					counts[2] += 1;
+			}
+			res(counts);
 		});
 	});
 };
-var getJobs = function(){
-  return new Promise(function(res,rej){
-    var query = 'SELECT * FROM jobs WHERE is_finished IS NULL OR is_finished=FALSE';
-    client.query(query,function(err,data){
-      if(err) rej(err);
-      res(data.rows)
-    })
-  });
+var getJobs = function() {
+	return new Promise(function(res, rej) {
+		var query = 'SELECT * FROM jobs WHERE is_finished IS NULL OR is_finished=FALSE';
+		client.query(query, function(err, data) {
+			if (err) rej(err);
+			res(data.rows)
+		})
+	});
+};
+var getDestinations = function(vessel) {
+	return new Promise(function(res, rej) {
+		var query = 'SELECT inland_point FROM arrival WHERE vessel_name=$$' + vessel + '$$';
+		client.query(query, function(err, data) {
+			if (err) rej(err);
+			console.log(data)
+			var counts = {}
+			var places = data.rows.map(function(v) {
+				return v.inland_point;
+			});
+			for (var i = 0; i < places.length; i++) {
+				if (places[i] in counts) counts[places[i]] += 1
+				else {
+					counts[places[i]] = 0;
+				}
+			}
+			res(counts);
+		});
+	});
+};
+var getLocalities = function(vessel) {
+	return new Promise(function(res, rej) {
+		var query = 'SELECT is_local FROM arrival WHERE vessel_name=$$' + vessel + '$$';
+		client.query(query, function(err, data) {
+			if (err) rej(err);
+			var counts = {
+				local: 0,
+				ipi: 0
+			};
+      console.log(data)
+			var places = data.rows.map(function(v) {
+				return v.is_local;
+			});
+			for (var i = 0; i < places.length; i++) {
+				if (places[i] == "IPI")
+					counts.ipi += 1;
+				if (places[i] == "Local")
+					counts.local += 1;
+			}
+			res(counts);
+		});
+	});
 };
 var client = new pg.Client(pgConfig);
 var queries = {
@@ -116,7 +159,9 @@ var queries = {
 	getChassisCount: getChassisCount,
 	assignChassis: assignChassis,
 	vesselQuery: vesselQuery,
-  getJobs: getJobs
+	getJobs: getJobs,
+	getDestinations: getDestinations,
+	getLocalities: getLocalities
 };
 
 
