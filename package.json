@@ -4,8 +4,9 @@
   "description": "on call server",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "WSPASS=blastER!1880 nodemon test.js",
     "reload": "AWSPASS=blastER!1880 nodemon server.js"
+
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
     "url": "https://github.com/jzeiders/onCallServer/issues"
   },
   "dependencies": {
+    "@google/maps": "^0.3.0",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "moment": "^2.15.1",

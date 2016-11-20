@@ -32,27 +32,15 @@ var jobQueryConstructor = function(arrival_time, container_size, container_id, p
 };
 
 var generateJobsFromArrivals = function() {
-	var blank_job = {
-		arrival_date: null,
-		price: null,
-		container_size: null,
-		container_id: null,
-		source: null,
-		desination: null,
-		trucker_id: null,
-		is_finished: null
-	};
-
-
 	client.query("SELECT * FROM arrival WHERE mode_of_exit='Truck'", function(err, data) {
 		if (err) throw err;
 		console.log("data");
-		for (var i = 0; i < sizes.length; i++) {
-			var item = sizes[i];
+		for (var i = 0; i < data.rows.length; i++) {
+			var item = data.rows[i];
 			var query = jobQueryConstructor(item.est_arrival, item.container_size, item.container_num, item.unload_port, item.arriving_term, item.inland_point);
 			client.query(query, handler);
 		}
-		console.log(sizes[0]);
+		console.log(data.rows[0]);
 	});
 };
 var handler = function(err, data) {
@@ -134,10 +122,10 @@ var getLocalities = function(vessel) {
 		client.query(query, function(err, data) {
 			if (err) rej(err);
 			var counts = {
-				local: 0,
-				ipi: 0
+				Local: 0,
+				IPI: 0
 			};
-      console.log(data)
+			console.log(data)
 			var places = data.rows.map(function(v) {
 				return v.is_local;
 			});
@@ -151,17 +139,35 @@ var getLocalities = function(vessel) {
 		});
 	});
 };
+var jobGen = function(vessel) {
+	return new Promise(function(res, rej) {
+    var query = "SELECT * FROM arrival WHERE mode_of_exit='Truck' AND vessel_name=$$" + vessel + '$$'
+    client.query(query, function(err, data) {
+			if (err) rej(err);
+			console.log(data);
+			for (var i = 0; i < data.rows.length; i++) {
+				var item = data.rows[i];
+				var query = jobQueryConstructor(item.est_arrival, item.container_size, item.container_num, item.unload_port, item.arriving_term, item.inland_point);
+				client.query(query, handler);
+			}
+      res();
+			console.log(data.rows[0]);
+		});
+	});
+}
 var client = new pg.Client(pgConfig);
+
 var queries = {
 	connect: connect, // Attempts to connect to DB;
 	generateJobsFromArrivals: generateJobsFromArrivals, // Generate all jobs from arrival_data
-	chassisGen: chassisGen,
-	getChassisCount: getChassisCount,
-	assignChassis: assignChassis,
-	vesselQuery: vesselQuery,
-	getJobs: getJobs,
-	getDestinations: getDestinations,
-	getLocalities: getLocalities
+	chassisGen: chassisGen, // Makes Chasis
+	getChassisCount: getChassisCount, // Counts Chassis
+	assignChassis: assignChassis, // Checkouts a Chassis
+	vesselQuery: vesselQuery, // Grabs all sizes from a vessel
+	getJobs: getJobs, // Returns all Jobs as a massive dump
+	getDestinations: getDestinations, // Returns # of places to Destinations
+	getLocalities: getLocalities, //
+	jobGen: jobGen
 };
 
 
