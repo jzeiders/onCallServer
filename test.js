@@ -18,6 +18,13 @@ app.listen(process.env.PORT || 3000, function() {
 	}).catch(function(err) {
 		console.log("err" + err);
 	});
+  queries.connect().then(function(){
+    queries.getChassisCount().then(function(res){
+      console.log("file", res);
+    });
+  }).catch(function(err){
+    console.log(err);
+  });
 	console.log("Started Server");
 	console.log(process.env.AWSPASS);
 });

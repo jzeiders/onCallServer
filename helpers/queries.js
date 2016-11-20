@@ -56,9 +56,34 @@ var chassisGen = function() {
 	}
 };
 var getChassisCount = function() {
-	client.query("SELECT * FROM chasis WHERE in_use=false", function(err, data) {
-		return data.length;
-	});
+	return new Promise(function(req, res) {
+		var counts = [
+			[0, 0, 0],
+			[0, 0, 0]
+		];
+		client.query("SELECT * FROM chassis", function(err, data) {
+			if (err) rej(err)
+			for (var i = 0; i < data.rows.length; i++) {
+				if (data.rows[i].size == 20) {
+					if (!data.rows[i].is_checked_out)
+						counts[1][0] += 1;
+					counts[0][0] += 1;
+				}
+				if (data.rows[i].size == 40) {
+					if (!data.rows[i].is_checked_out)
+						counts[1][1] += 1;
+					counts[0][1] += 1;
+				}
+				if (data.rows[i].size == 45) {
+					if (!data.rows[i].is_checked_out)
+						counts[1][2] += 1;
+					counts[0][2] += 1;
+				}
+			}
+			console.log(counts)
+			res(counts)
+		});
+	})
 };
 var assignChassis = function() {
 	client.query("");
@@ -88,11 +113,11 @@ var vesselQuery = function(vessel) {
 	});
 };
 var getJobs = function() {
-	return new Promise(function(res, rej) {
+	return new Promise(function(resolve, rej) {
 		var query = 'SELECT * FROM jobs WHERE is_finished IS NULL OR is_finished=FALSE';
 		client.query(query, function(err, data) {
 			if (err) rej(err);
-			res(data.rows)
+			resolve(data.rows)
 		})
 	});
 };
@@ -142,20 +167,74 @@ var getLocalities = function(vessel) {
 
 var jobGen = function(vessel) {
 	return new Promise(function(res, rej) {
-    var query = "SELECT * FROM arrival WHERE mode_of_exit='Truck' AND vessel_name=$$" + vessel + '$$';
-    client.query(query, function(err, data) {
+		var query = "SELECT * FROM arrival WHERE mode_of_exit='Truck' AND vessel_name=$$" + vessel + '$$';
+		client.query(query, function(err, data) {
 			if (err) rej(err);
 			console.log(data);
-			for (var i = 0; i < Math.min(20,data.rows.length); i++) {
+			for (var i = 0; i < Math.min(20, data.rows.length); i++) {
 				var item = data.rows[i];
 				var query = jobQueryConstructor(item.est_arrival, item.container_size, item.container_num, item.unload_port, item.arriving_term, item.inland_point);
-				client.query(query, function(err, data){
-          if(err) rej(err);
-        });
+				client.query(query, function(err, data) {
+					if (err) rej(err);
+				});
 			}
-      res();
+			res();
 			console.log(data.rows[0]);
 		});
+	});
+};
+
+var priceRandom = function() {
+	var price = Math.floor(Math.random() * 400 + 100);
+	var query = "UPDATE jobs SET price=floor(random()* 1500+150);"
+	client.query(query, function(err, data) {
+		if (err) console.log(err + "D")
+		console.log("D")
+	})
+}
+var timeRandom = function() {
+	var query = "UPDATE jobs SET arrival_time = arrival_time+ id * interval '1 minute'"
+	client.query(query, function(err, data) {
+		if (err) console.log(err + "D")
+		console.log("D")
+	})
+}
+var fillJob = function(t_id, j_id) {
+	return new Promise(function(res, rej) {
+		var query = "UPDATE jobs SET trucker_id = "+t_id  + "WHERE id= " +j_id+ ";"
+		client.query(query, function(err, data) {
+			if (err) rej(err);
+			res();
+		});
+	});
+}
+var getJob = function(j_id) {
+	return new Promise(function(res, rej) {
+		var query = "SELECT * FROM jobs WHERE id= "+j_id+";"
+		client.query(query, function(err, data) {
+			if (err || data.rows.length < 1) rej(err)
+			res(data.rows[0]);
+		})
+	});
+}
+var getTruckerInfo = function(t_id) {
+	return new Promise(function(res, rej) {
+		var query = "SELECT * FROM jobs WHERE trucker_id="+ t_id+";"
+    client.query(query, function(err, data) {
+      if (err) rej(err)
+      var jobs = data.rows;
+      var query="SELECT * FROM truckers WHERE id= + "+t_id+";";
+      console.log("hi");
+      client.query(query, function(err,data){
+        if(err) rej(err)
+        var value = {};
+        if(data)
+          value = data.rows[0];
+        console.log(jobs +"HI");
+        value.jobs = jobs;
+        res(value);
+      });
+    });
 	});
 }
 var client = new pg.Client(pgConfig);
@@ -169,8 +248,13 @@ var queries = {
 	vesselQuery: vesselQuery, // Grabs all sizes from a vessel
 	getJobs: getJobs, // Returns all Jobs as a massive dump
 	getDestinations: getDestinations, // Returns # of places to Destinations
-	getLocalities: getLocalities, //
-	jobGen: jobGen
+	getLocalities: getLocalities, // Returns IPI Ratio
+	jobGen: jobGen, // Gens Jobs
+	priceRandom: priceRandom, // Assigns Prices
+	timeRandom: timeRandom, // Assigns Times
+	fillJob: fillJob,
+	getJob: getJob,
+	getTruckerInfo: getTruckerInfo
 };
 
 

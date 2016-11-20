@@ -4,7 +4,7 @@
   "description": "on call server",
   "main": "server.js",
   "scripts": {
-    "test": "WSPASS=blastER!1880 nodemon test.js",
+    "test": "AWSPASS=blastER!1880 nodemon test.js",
     "reload": "AWSPASS=blastER!1880 nodemon server.js"
 
   },

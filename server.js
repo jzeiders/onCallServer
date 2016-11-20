@@ -49,7 +49,40 @@ app.post("/jobGen", function(req, res) {
     res.send('Faile');
 	});
 });
-
+app.get("/chassis", function(req,res){
+  queries.getChassisCount().then(function(data){
+    res.send(data);
+  }).catch(function(err){
+    res.send(err);
+  });
+});
+app.post("/fillJob", function(req,res){
+  var t_id = req.body.trucker_id;
+  var j_id = req.body.job_id;
+  queries.fillJob(t_id,j_id).then(function(){
+    res.send("Success");
+  }).catch(function(err){
+    console.log(err)
+    res.send(err);
+  });
+});
+app.post("/getJob", function(req,res){
+  var j_id = req.body.job_id;
+  queries.getJob(j_id).then(function(data){
+    res.send(data);
+  }).catch(function(rej){
+    res.send(err);
+  });
+});
+app.post("/getTruckerInfo", function(req,res){
+  var t_id = req.body.trucker_id;
+  queries.getTruckerInfo(t_id).then(function(data){
+    res.send(data);
+  }).catch(function(rej){
+    console.log(err);
+    res.send(err);
+  });
+});
 app.listen(process.env.PORT || 3000, function() {
 	queries.connect().then(function(data) {
 		console.log("Connected");
