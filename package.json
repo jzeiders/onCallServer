@@ -1,25 +1,27 @@
 {
-	"name": "oncallserver",
-	"version": "0.0.1",
-	"description": "on call server",
-	"main": "server.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/jzeiders/onCallServer.git"
-	},
-	"author": "John, Caleb",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/jzeiders/onCallServer/issues"
-	},
-	"dependencies": {
-		"express": "^4.14.0",
-		"moment": "^2.15.1",
-		"promise": "^7.1.1",
-		"request": "^2.75.0"
-	},
-	"homepage": "https://github.com/jzeiders/onCallServer#readme"
+  "name": "oncallserver",
+  "version": "0.0.1",
+  "description": "on call server",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "reload": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jzeiders/onCallServer.git"
+  },
+  "author": "John, Caleb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jzeiders/onCallServer/issues"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "moment": "^2.15.1",
+    "pg": "^6.1.0",
+    "promise": "^7.1.1",
+    "request": "^2.75.0"
+  },
+  "homepage": "https://github.com/jzeiders/onCallServer#readme"
 }
