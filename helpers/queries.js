@@ -222,7 +222,9 @@ var getTruckerInfo = function(t_id) {
 		var query = "SELECT * FROM jobs WHERE trucker_id="+ t_id+";"
     client.query(query, function(err, data) {
       if (err) rej(err)
-      var jobs = data.rows;
+      var jobs = []
+      if(data)
+         jobs = data.rows;
       var query="SELECT * FROM truckers WHERE id= + "+t_id+";";
       console.log("hi");
       client.query(query, function(err,data){
